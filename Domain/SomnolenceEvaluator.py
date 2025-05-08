@@ -3,9 +3,9 @@ from Domain.Events import create_event
 import time
 
 class SomnolenceEvaluator:
-    def __init__(self, ear_closing_threshold=0.25, ear_opening_threshold=0.28,
-                 lip_threshold=25, min_yawn_duration=4,
-                 head_tilt_ratio_threshold=0.75, head_tilt_min_duration=3):
+    def __init__(self, ear_closing_threshold, ear_opening_threshold,
+                 lip_threshold, min_yawn_duration,
+                 head_tilt_ratio_threshold, head_tilt_min_duration):
         self.ear_closing_threshold = ear_closing_threshold
         self.ear_opening_threshold = ear_opening_threshold
         self.lip_threshold = lip_threshold
@@ -72,7 +72,7 @@ class SomnolenceEvaluator:
             if self.yawn_in_progress:
                 yawn_duration = current_time - self.yawn_start_time if self.yawn_start_time else 0
                 if yawn_duration >= self.min_yawn_duration:
-                    detalle = f"Apertura de labios >= 4s - {yawn_duration:.1f} segundos"
+                    detalle = f"Apertura de labios >= {self.min_yawn_duration}s - {yawn_duration:.1f} segundos"
                     events.append(create_event("bostezo", detalle))
                 self.yawn_in_progress = False
                 self.yawn_start_time = None

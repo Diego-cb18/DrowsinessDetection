@@ -1,0 +1,35 @@
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+
+# Entornos virtuales
+venv/
+venv*/ 
+.env/
+ENV*/
+EVSpy/
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Datos de entrenamiento o multimedia grandes
+*.jpg
+*.png
+*.mp4
+*.avi
+*.mov
+*.csv
+*.json
+
+# Reportes exportados
+report_*.json

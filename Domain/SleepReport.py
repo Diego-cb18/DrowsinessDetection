@@ -13,6 +13,7 @@ class SleepReport:
         self.yawn_count = 0
         self.nod_count = 0
         self.critical_events = []
+        self.video_filenames = []  # Lista de nombres de videos
 
     def agregar_parpadeo(self):
         self.blink_count += 1
@@ -26,6 +27,9 @@ class SleepReport:
     def registrar_evento_critico(self, descripcion_evento):
         if descripcion_evento not in self.critical_events:
             self.critical_events.append(descripcion_evento)
+
+    def registrar_video(self, nombre_archivo):
+        self.video_filenames.append(nombre_archivo)
 
     def asignar_datos_conductor(self, nombre, apellidos, dni, telefono, tipo_vehiculo, placa):
         self.driver_data.update({
