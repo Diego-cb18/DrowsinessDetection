@@ -1,0 +1,19 @@
+{
+    "conductor": {
+        "nombre": "",
+        "apellidos": "",
+        "dni": "",
+        "telefono": "",
+        "tipo_vehiculo": "",
+        "placa": ""
+    },
+    "reporte_somnolencia": {
+        "parpadeos": 20,
+        "bostezos": 2,
+        "cabeceos": 4,
+        "eventos_criticos": [
+            "microsueño moderado (Ojos cerrados 7-10seg - 9.1 segundos)"
+        ]
+    },
+    "fecha_generacion": "2025-05-08 11:56:41"
+}

@@ -1,0 +1,17 @@
+{
+    "conductor": {
+        "nombre": "",
+        "apellidos": "",
+        "dni": "",
+        "telefono": "",
+        "tipo_vehiculo": "",
+        "placa": ""
+    },
+    "reporte_somnolencia": {
+        "parpadeos": 0,
+        "bostezos": 0,
+        "cabeceos": 0,
+        "eventos_criticos": []
+    },
+    "fecha_generacion": "2025-05-08 12:02:39"
+}
