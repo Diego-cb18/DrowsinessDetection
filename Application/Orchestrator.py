@@ -10,9 +10,9 @@ from Domain.FaceMetrics import calculate_ear, calculate_lip_openness, calculate_
 from Domain.SleepReport import SleepReport
 
 def run_camera_view(camera_index=0):
-    camera = CameraCV2(index=camera_index)
+    camera = cv2.VideoCapture(0)
 
-    if not camera.is_open():
+    if not camera.isOpened():
         print("No se pudo abrir la cámara")
         return
     else:
@@ -44,7 +44,7 @@ def run_camera_view(camera_index=0):
     last_recording_ended_time = None
 
     while True:
-        ret, frame = camera.read_frame()
+        ret, frame = camera.read()
         if not ret:
             print("-> No se pudo leer el fotograma")
             break
@@ -223,10 +223,11 @@ def run_camera_view(camera_index=0):
             combined_frame = cv2.hconcat([frame_resized, panel_resized])
             video_exporter.write_frame(combined_frame)
 
-        cv2.imshow("Vista de cámara", frame)
+        cv2.imshow("Vista de camara", frame)
         cv2.imshow("Estado del conductor", panel)
 
-        if cv2.waitKey(1) & 0xFF == ord('c') or cv2.getWindowProperty('Vista de cámara', cv2.WND_PROP_VISIBLE) < 1:
+        key = cv2.waitKey(1)
+        if cv2.waitKey(1) & 0xFF == ord('c') or cv2.getWindowProperty('Vista de camara', cv2.WND_PROP_VISIBLE) < 1:
             break
 
     if video_exporter.is_recording():

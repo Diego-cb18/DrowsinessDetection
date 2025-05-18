@@ -18,7 +18,7 @@ def calculate_lip_openness(lip_points):
     else:
         return 0  # valor neutro si no hay suficientes puntos
 
-# Nuevo: relación entre inclinación nariz-mentón y frente-nariz
+# Relación entre inclinación nariz-mentón y frente-nariz
 def calculate_head_tilt_ratio(forehead, nose, chin):
     dist_forehead_nose = math.dist(forehead, nose)
     dist_nose_chin = math.dist(nose, chin)
