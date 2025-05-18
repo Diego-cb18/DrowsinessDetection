@@ -1,5 +1,6 @@
 import time
 import cv2
+import platform
 from Infrastructure.Input.CameraCV2 import CameraCV2
 from Infrastructure.Input.FaceMeshAdapter import get_landmarks_from_frame
 from Infrastructure.Output.DriverStatusPanel import create_status_panel
@@ -10,7 +11,13 @@ from Domain.FaceMetrics import calculate_ear, calculate_lip_openness, calculate_
 from Domain.SleepReport import SleepReport
 
 def run_camera_view(camera_index=0):
-    camera = cv2.VideoCapture(0)
+    print(f"Abriendo cámara con índice: ")
+    system = platform.system()
+
+    if system == "Windows":
+        camera = cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
+    else: 
+        camera = cv2.VideoCapture(camera_index)
 
     if not camera.isOpened():
         print("No se pudo abrir la cámara")
