@@ -1,22 +1,24 @@
 import time
 import cv2
 import platform
+import threading
 from Infrastructure.Input.CameraCV2 import CameraCV2
 from Infrastructure.Input.FaceMeshAdapter import get_landmarks_from_frame
 from Infrastructure.Output.DriverStatusPanel import create_status_panel
 from Infrastructure.Output.ReportExporter import ReportExporter
 from Infrastructure.Output.VideoExporter import VideoExporter
+from Infrastructure.Output.AudioAlert import AudioAlert
 from Domain.SomnolenceEvaluator import SomnolenceEvaluator
 from Domain.FaceMetrics import calculate_ear, calculate_lip_openness, calculate_head_tilt_ratio
 from Domain.SleepReport import SleepReport
 
 def run_camera_view(camera_index=0):
-    print(f"Abriendo cámara con índice: ")
+    print(f"Abriendo cámara con índice: {camera_index}")
     system = platform.system()
 
     if system == "Windows":
         camera = cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
-    else: 
+    else:
         camera = cv2.VideoCapture(camera_index)
 
     if not camera.isOpened():
@@ -37,6 +39,7 @@ def run_camera_view(camera_index=0):
     report = SleepReport()
     exporter = ReportExporter()
     video_exporter = VideoExporter()
+    audio_alert = AudioAlert()
 
     blink_total = 0
     yawn_total = 0
@@ -49,6 +52,7 @@ def run_camera_view(camera_index=0):
     alert_seconds = 0
     waiting_for_alert = False
     last_recording_ended_time = None
+    alerta_emitida = False
 
     while True:
         ret, frame = camera.read()
@@ -130,6 +134,7 @@ def run_camera_view(camera_index=0):
                     head_tilt_in_progress = True
                     driver_state = "Cabeceo"
 
+            # === EVENTO CRÍTICO ===
             if driver_state in [
                 "Parpadeo prolongado",
                 "Microsueño leve",
@@ -139,21 +144,33 @@ def run_camera_view(camera_index=0):
             ]:
                 alert_started_time = None
                 alert_seconds = 0
+                alerta_emitida = False
+                audio_alert.start_beep()
 
-                if not recording and not waiting_for_alert:
+                if not recording:
                     nombre_video = video_exporter.start_recording()
                     report.registrar_video(nombre_video)
                     recording = True
                     recording_start_time = current_time
+
                 elif recording:
                     video_seconds = int(current_time - recording_start_time)
                     if video_seconds >= 60:
                         video_exporter.stop_recording()
                         recording = False
-                        last_recording_ended_time = current_time
-                        waiting_for_alert = True
+
+            # === TRANSICIÓN A ALERTA ===
             elif recording:
                 if driver_state == "Alerta":
+                    audio_alert.stop_beep()
+
+                    # Emitir mensaje de voz solo una vez por evento
+                    if not alerta_emitida and report.critical_events:
+                        evento_reciente = report.critical_events[-1]
+                        mensaje = f"Alerta. Se detectó un evento crítico: {evento_reciente}. Se recomienda tomar precauciones."
+                        threading.Thread(target=audio_alert.play_voice_alert, args=(mensaje,), daemon=True).start()
+                        alerta_emitida = True
+
                     if alert_started_time is None:
                         alert_started_time = current_time
                     else:
@@ -161,17 +178,12 @@ def run_camera_view(camera_index=0):
                         if alert_seconds >= 7:
                             video_exporter.stop_recording()
                             recording = False
-                            last_recording_ended_time = current_time
-                            waiting_for_alert = True
+
                 else:
                     alert_started_time = None
                     alert_seconds = 0
-            elif waiting_for_alert:
-                if driver_state == "Alerta":
-                    waiting_for_alert = False
-                    alert_started_time = None
-                    alert_seconds = 0
 
+            # === EVENTOS DEL DOMINIO ===
             eventos = evaluator.evaluate(prepared)
 
             for e in eventos:
@@ -234,7 +246,7 @@ def run_camera_view(camera_index=0):
         cv2.imshow("Estado del conductor", panel)
 
         key = cv2.waitKey(1)
-        if cv2.waitKey(1) & 0xFF == ord('c') or cv2.getWindowProperty('Vista de camara', cv2.WND_PROP_VISIBLE) < 1:
+        if key & 0xFF == ord('c') or cv2.getWindowProperty('Vista de camara', cv2.WND_PROP_VISIBLE) < 1:
             break
 
     if video_exporter.is_recording():

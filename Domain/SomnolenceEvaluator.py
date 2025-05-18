@@ -48,16 +48,16 @@ class SomnolenceEvaluator:
                         detalle = f"Ojos cerrados < 3s - {eye_duration:.1f} segundos"
                         events.append(create_event("parpadeo", detalle))
                     if 3 <= eye_duration < 5:
-                        detalle = f"Ojos cerrados 3-5seg - {eye_duration:.1f} segundos"
+                        detalle = f"Ojos cerrados 3 a 5 segundos - {eye_duration:.1f} segundos"
                         events.append(create_event("parpadeo prolongado", detalle))
                     elif 5 <= eye_duration < 7:
-                        detalle = f"Ojos cerrados 5-7seg - {eye_duration:.1f} segundos"
+                        detalle = f"Ojos cerrados 5 a 7segundos - {eye_duration:.1f} segundos"
                         events.append(create_event("microsueño leve", detalle))
                     elif 7 <= eye_duration < 10:
-                        detalle = f"Ojos cerrados 7-10seg - {eye_duration:.1f} segundos"
+                        detalle = f"Ojos cerrados 7 a 10 segundos - {eye_duration:.1f} segundos"
                         events.append(create_event("microsueño moderado", detalle))
                     elif 10 <= eye_duration < 15:
-                        detalle = f"Ojos cerrados 10-15seg - {eye_duration:.1f} segundos"
+                        detalle = f"Ojos cerrados 10 a 15 segundos - {eye_duration:.1f} segundos"
                         events.append(create_event("microsueño profundo", detalle))
 
                 self.eye_closed_time = None
