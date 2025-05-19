@@ -258,5 +258,5 @@ def run_camera_view(camera_index=0):
     json_path = exporter.export_to_json(report)
 
     # Enviar el reporte al backend
-    sender = ReportSender("http://192.168.0.109:8000/reports/upload/")  # ip
+    sender = ReportSender("http://192.168.43.217:8000/reports/upload/")  # ip
     sender.send_report(json_path)
