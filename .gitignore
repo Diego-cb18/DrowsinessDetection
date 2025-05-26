@@ -1,3 +1,6 @@
+.env
+generate_voice_cache.py
+
 # Archivos compilados de Python
 __pycache__/
 *.py[cod]
