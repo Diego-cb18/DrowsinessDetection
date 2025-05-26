@@ -10,6 +10,7 @@ from Domain.SomnolenceEvaluator import SomnolenceEvaluator
 from Domain.FaceMetrics import calculate_ear, calculate_lip_openness, calculate_head_tilt_ratio
 from Domain.SleepReport import SleepReport
 from Infrastructure.Output.ReportSender import ReportSender
+from Infrastructure.Output.VideoUploader import VideoUploader
 
 def run_camera_view(camera_index=0):
     print(f"Abriendo cámara con índice: {camera_index}")
@@ -298,6 +299,14 @@ def run_camera_view(camera_index=0):
 
     camera.release()
     cv2.destroyAllWindows()
-    json_path = exporter.export_to_json(report)
+
+    # Subir videos a S3
+    uploader = VideoUploader()
+    video_urls = uploader.process_and_upload_all(report.video_filenames)
+
+    # Exportar JSON incluyendo las URLs
+    json_path = exporter.export_to_json(report, video_urls)
+
+    # Enviar al backend
     sender = ReportSender("http://192.168.43.217:8000/reports/upload/")
     sender.send_report(json_path)

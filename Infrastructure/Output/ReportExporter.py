@@ -7,7 +7,7 @@ class ReportExporter:
         self.output_folder = output_folder
         os.makedirs(output_folder, exist_ok=True)
 
-    def export_to_json(self, report_object, filename_prefix="reporte_somnolencia"):
+    def export_to_json(self, report_object, video_urls=None, filename_prefix="reporte_somnolencia"):
         data = {
             "conductor": report_object.driver_data,
             "reporte_somnolencia": {
@@ -15,7 +15,8 @@ class ReportExporter:
                 "bostezos": report_object.yawn_count,
                 "cabeceos": report_object.nod_count,
                 "eventos_criticos": list(report_object.critical_events),
-                "videos": report_object.video_filenames  # Lista de nombres de videos
+                "videos": report_object.video_filenames,
+                "url_videos": video_urls or []
             },
             "fecha_generacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }

@@ -1,5 +1,6 @@
 .env
 generate_voice_cache.py
+testvideoupload.py
 
 # Archivos compilados de Python
 __pycache__/
