@@ -1,5 +1,10 @@
 import os
-os.environ["SDL_AUDIODRIVER"] = "alsa"
+import platform
+
+if platform.system() == "Linux":
+    os.environ["SDL_AUDIODRIVER"] = "alsa"
+elif platform.system() == "Windows":
+    os.environ["SDL_AUDIODRIVER"] = "directsound"
 import platform
 import threading
 import time

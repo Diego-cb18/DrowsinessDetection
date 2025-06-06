@@ -308,5 +308,5 @@ def run_camera_view(camera_index=0):
     json_path = exporter.export_to_json(report, video_urls)
 
     # Enviar al backend
-    sender = ReportSender("https://vigiadrowsyapp.duckdns.org/reports/upload")
+    sender = ReportSender("https://vigiadrowsyapp.duckdns.org/reports/upload/")
     sender.send_report(json_path)

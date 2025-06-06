@@ -1,4 +1,5 @@
 import requests
+import certifi
 
 class ReportSender:
     def __init__(self, backend_url):
@@ -11,9 +12,18 @@ class ReportSender:
             }
 
             try:
-                response = requests.post(self.backend_url, files=files)
+                response = requests.post(
+                    self.backend_url,
+                    files=files,
+                    timeout=10,
+                    verify=certifi.where()
+                )
                 print("--> Reporte enviado al backend")
                 print("Código:", response.status_code)
                 print("Respuesta:", response.json())
+            except requests.exceptions.SSLError as ssl_err:
+                print("[ERROR SSL] No se confía en el certificado:", ssl_err)
+            except requests.exceptions.ConnectTimeout:
+                print("[ERROR] Tiempo de conexión agotado (timeout)")
             except Exception as e:
                 print("-->  Error al enviar el reporte:", str(e))
