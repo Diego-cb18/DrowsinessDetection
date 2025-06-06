@@ -2,11 +2,20 @@ import os
 import boto3
 import subprocess
 import shutil
+import platform
 
 class VideoUploader:
-    def __init__(self, bucket_name="videos-somnolencia-diego", ffmpeg_path="C:\\ffmpeg\\bin\\ffmpeg.exe"):
+    def __init__(self, bucket_name="videos-somnolencia-diego", ffmpeg_path=None):
         self.bucket_name = bucket_name
-        self.ffmpeg_path = ffmpeg_path
+
+        if ffmpeg_path:
+            self.ffmpeg_path = ffmpeg_path
+        else:
+            if platform.system() == "Windows":
+                self.ffmpeg_path = "C:\\ffmpeg\\bin\\ffmpeg.exe"
+            else:
+                self.ffmpeg_path = "ffmpeg" 
+
         self.s3 = boto3.client("s3")
 
     def process_video(self, input_path):
@@ -22,9 +31,17 @@ class VideoUploader:
             "-movflags", "+faststart",
             temp_output
         ]
-        subprocess.run(cmd, check=True)
-        shutil.move(temp_output, input_path)
-        print("-> Video procesado correctamente.")
+
+        try:
+            subprocess.run(cmd, check=True)
+            shutil.move(temp_output, input_path)
+            print("-> Video procesado correctamente.")
+        except FileNotFoundError:
+            print("[ERROR] ffmpeg no encontrado. Asegúrate de que esté instalado y accesible.")
+            raise
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] ffmpeg falló: {e}")
+            raise
 
     def upload_video(self, local_path, object_name):
         print(f"Subiendo a S3: {object_name}")

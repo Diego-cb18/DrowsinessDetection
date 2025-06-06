@@ -1,4 +1,5 @@
 import os
+os.environ["SDL_AUDIODRIVER"] = "alsa"
 import platform
 import threading
 import time
@@ -10,7 +11,11 @@ class AudioAlert:
         self.voice_playing = False
         self.beep_thread = None
         self.voice_thread = None
-        mixer.init()
+        try:
+            mixer.init()
+        except Exception as e:
+            print(f"[AudioAlert] ERROR al inicializar mixer: {e}")
+
         os.makedirs("audio_cache", exist_ok=True)
 
     def _beep_loop(self):
