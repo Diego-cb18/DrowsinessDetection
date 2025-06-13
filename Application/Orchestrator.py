@@ -1,6 +1,7 @@
 import time
 import cv2
 import platform
+import os
 from Infrastructure.Input.FaceMeshAdapter import get_landmarks_from_frame
 from Infrastructure.Output.DriverStatusPanel import create_status_panel
 from Infrastructure.Output.ReportExporter import ReportExporter
@@ -12,8 +13,16 @@ from Domain.SleepReport import SleepReport
 from Infrastructure.Output.ReportSender import ReportSender
 from Infrastructure.Output.VideoUploader import VideoUploader
 from Infrastructure.Utils.MacUtils import get_mac_address
+from Infrastructure.Utils.NetworkUtils import is_connected
+import shutil
+from Infrastructure.Utils.PendingResender import PendingResender
 
 def run_camera_view(camera_index=0):
+
+    resender = PendingResender(check_interval=10)  # 10s solo para pruebas
+    resender.start()
+
+
     print(f"Abriendo cámara con índice: {camera_index}")
     system = platform.system()
 
@@ -302,13 +311,25 @@ def run_camera_view(camera_index=0):
     camera.release()
     cv2.destroyAllWindows()
 
-    # Subir videos a S3
-    uploader = VideoUploader()
-    video_urls = uploader.process_and_upload_all(report.video_filenames)
+    if is_connected():
+        print("[INFO] Conexión disponible. Subiendo videos y enviando reporte...")
+        uploader = VideoUploader()
+        video_urls = uploader.process_and_upload_all(report.video_filenames)
+        json_path = exporter.export_to_json(report, video_urls)
+        sender = ReportSender("https://vigiadrowsyapp.duckdns.org/reports/upload/")
+        sender.send_report(json_path)
+    else:
+        print("[ADVERTENCIA] Sin conexión. Guardando localmente...")
 
-    # Exportar JSON incluyendo las URLs
-    json_path = exporter.export_to_json(report, video_urls)
+        # Mover videos a carpeta local
+        for name in report.video_filenames:
+            src = os.path.join("Videos", name)
+            dst = os.path.join("PendingVideos", name)
+            shutil.move(src, dst)
 
-    # Enviar al backend
-    sender = ReportSender("https://vigiadrowsyapp.duckdns.org/reports/upload/")
-    sender.send_report(json_path)
+        # Exportar JSON sin URLs
+        json_path = exporter.export_to_json(report, video_urls=[])
+        pending_path = os.path.join("PendingReports", os.path.basename(json_path))
+        shutil.move(json_path, pending_path)
+
+    resender.stop()

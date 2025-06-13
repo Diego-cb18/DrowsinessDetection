@@ -21,9 +21,13 @@ class ReportSender:
                 print("--> Reporte enviado al backend")
                 print("Código:", response.status_code)
                 print("Respuesta:", response.json())
+                return response
             except requests.exceptions.SSLError as ssl_err:
                 print("[ERROR SSL] No se confía en el certificado:", ssl_err)
+                return None
             except requests.exceptions.ConnectTimeout:
                 print("[ERROR] Tiempo de conexión agotado (timeout)")
+                return None
             except Exception as e:
                 print("-->  Error al enviar el reporte:", str(e))
+                return None
