@@ -13,7 +13,8 @@ class SleepReport:
         self.yawn_count = 0
         self.nod_count = 0
         self.critical_events = []
-        self.video_filenames = []  # Lista de nombres de videos
+        self.video_filenames = []
+        self.mac_address = ""
 
     def agregar_parpadeo(self):
         self.blink_count += 1
@@ -40,3 +41,6 @@ class SleepReport:
             "tipo_vehiculo": tipo_vehiculo,
             "placa": placa
         })
+
+    def asignar_mac_address(self, mac):
+        self.mac_address = mac

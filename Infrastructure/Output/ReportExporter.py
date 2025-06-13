@@ -10,6 +10,7 @@ class ReportExporter:
     def export_to_json(self, report_object, video_urls=None, filename_prefix="reporte_somnolencia"):
         data = {
             "conductor": report_object.driver_data,
+            "mac_address": report_object.mac_address,
             "reporte_somnolencia": {
                 "parpadeos": report_object.blink_count,
                 "bostezos": report_object.yawn_count,

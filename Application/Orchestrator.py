@@ -11,6 +11,7 @@ from Domain.FaceMetrics import calculate_ear, calculate_lip_openness, calculate_
 from Domain.SleepReport import SleepReport
 from Infrastructure.Output.ReportSender import ReportSender
 from Infrastructure.Output.VideoUploader import VideoUploader
+from Infrastructure.Utils.MacUtils import get_mac_address
 
 def run_camera_view(camera_index=0):
     print(f"Abriendo cámara con índice: {camera_index}")
@@ -40,6 +41,7 @@ def run_camera_view(camera_index=0):
     )
 
     report = SleepReport()
+    report.asignar_mac_address(get_mac_address())
     exporter = ReportExporter()
     video_exporter = VideoExporter()
     audio_alert = AudioAlert()
