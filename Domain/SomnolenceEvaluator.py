@@ -69,13 +69,13 @@ class SomnolenceEvaluator:
                 self.yawn_in_progress = True
                 self.yawn_start_time = current_time
         else:
-            if self.yawn_in_progress:
-                yawn_duration = current_time - self.yawn_start_time if self.yawn_start_time else 0
+            if self.yawn_in_progress and self.yawn_start_time is not None:
+                yawn_duration = current_time - self.yawn_start_time
                 if yawn_duration >= self.min_yawn_duration:
                     detalle = f"Apertura de labios >= {self.min_yawn_duration}s - {yawn_duration:.1f} segundos"
                     events.append(create_event("bostezo", detalle))
-                self.yawn_in_progress = False
-                self.yawn_start_time = None
+            self.yawn_in_progress = False
+            self.yawn_start_time = None
 
         # === CABECEO ===
         forehead, nose, chin = landmarks["forehead_nose_chin"]

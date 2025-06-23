@@ -1,6 +1,12 @@
 .env
 generate_voice_cache.py
 testvideoupload.py
+test2.py
+test*/
+pytest.ini
+setup.py
+EA_t01.egg-info/
+
 
 # Archivos compilados de Python
 __pycache__/
